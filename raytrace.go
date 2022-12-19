@@ -120,5 +120,19 @@ func Shade(scene *Scene, ray *Ray, intersection *Intersection) *Color {
 		}
 	}
 
+	color.R = Clamp(color.R, 0, 1)
+	color.G = Clamp(color.G, 0, 1)
+	color.B = Clamp(color.B, 0, 1)
+
 	return &color
+}
+
+func Clamp(value float64, min float64, max float64) float64 {
+	if value < min {
+		return min
+	} else if value > max {
+		return max
+	} else {
+		return value
+	}
 }

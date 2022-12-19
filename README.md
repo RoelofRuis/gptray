@@ -4,12 +4,17 @@ Although I have a solid 10 years programming experience, I have no prior knowled
 
 So I thought why not let ChatGPT help me write a raytracer.
 
+As I am in no position to judge the correctness of the code (or at least I will pretend not to be, for the sake of the experiment), I will have to try to keep improving iteratively through further chat interaction.
+
+#### Render 01
+
 The basis of the code, up until the point it could output an image for the first time, was generated within one and a half hours!
 This is the initial render, personally I think this is amazing, although there are probably some errors in the code.
 
-![Initial render](initial-render.png)
+![Render 01](renders/01.png)
 
-#### Further work
+#### Render 02
 
-As I am in no position to judge the correctness of the code (I am, though, but I will pretend not to be, for the sake of the experiment), I will have to improve iteratively through further chat interaction...
+Adding clamping clearly improves the output image.
 
+![Render 02](renders/02.png)
