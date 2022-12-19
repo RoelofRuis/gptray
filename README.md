@@ -36,3 +36,9 @@ After correctly positioning the plane and sphere, and adding field of view, the 
 Adding multisampling to improve the output quality.
 
 ![Render 05](renders/05.png)
+
+#### 06. Aspect Ratio Fix
+
+Fixed a bug with the aspect ratio calculation and lowered the ground plane a bit.
+
+![Render 06](renders/06.png)

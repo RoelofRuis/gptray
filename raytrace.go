@@ -63,8 +63,17 @@ func CreateRay(camera Camera, screenX, screenY, aspectRatio float64) *Ray {
 
 	// Calculate the direction of the ray
 	dir := camera.LookAt.Subtract(camera.Position).Normalize()
-	dir = dir.Add(camera.Up.MultiplyScalar(screenY)).Normalize()
-	dir = dir.Add(camera.Up.Cross(dir).Normalize().MultiplyScalar(screenX / aspectRatio)).Normalize()
+
+	// Calculate the right and up vectors
+	right := camera.Up.Cross(dir).Normalize()
+	up := dir.Cross(right)
+
+	// Scale the right and up vectors by the screen coordinates
+	right = right.MultiplyScalar(screenX * aspectRatio)
+	up = up.MultiplyScalar(screenY)
+
+	// Add the right and up vectors to the direction vector
+	dir = dir.Add(right).Add(up).Normalize()
 
 	// Scale the direction vector by the near plane distance
 	dir = dir.MultiplyScalar(nearPlaneDistance)
