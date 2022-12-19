@@ -24,3 +24,9 @@ Adding clamping clearly improves the output image.
 Adding a plane to the scene seems to create a proper mess. Time for some chat guided debugging...
 
 ![Render 03](renders/03.png)
+
+#### 04. Positioning
+
+After correctly positioning the plane and sphere, and adding field of view, the output looks better, but it looks like a new kind of clipping has been introduced.
+
+![Render 04](renders/04.png)
