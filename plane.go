@@ -8,7 +8,6 @@ type Plane struct {
 
 func (p Plane) Intersect(ray *Ray) (float64, bool) {
 	// calculate the dot product of the normal and the ray direction
-
 	dot := p.NormalVector.Dot(ray.Direction)
 
 	// check if the ray is parallel to the plane

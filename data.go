@@ -33,13 +33,13 @@ type Camera struct {
 }
 
 type Material struct {
-	Color             *Color  //diffuse color of the material
-	SpecularIntensity float64 // specular reflection coefficient of the material
-	DiffuseIntensity  float64 // diffuse reflection coefficient of the material
-	Shininess         float64 // shininess exponent of the material
-	Reflectivity      float64 // reflectivity coefficient of the material
-	Transparency      float64 // transparency coefficient of the material
-	RefractionIndex   float64 // refraction index of the material
+	Color            *Color  //diffuse color of the material
+	Diffuse          float64 // diffuse lighting coefficient (0-1)
+	Specular         float64 // specular lighting coefficient (0-1)
+	SpecularExponent float64 // shininess coefficient (0-infinity)
+	Reflective       float64 // reflective coefficient (0-1)
+	Refractive       float64 // refractive coefficient (0-1)
+	RefractionIndex  float64 // index of refraction (1-infinity)
 }
 
 type Color struct {
@@ -62,12 +62,24 @@ func (c Color) Add(c2 Color) Color {
 	}
 }
 
+func (c Color) Clamp() Color {
+	return Color{
+		math.Max(0, math.Min(c.R, 1)),
+		math.Max(0, math.Min(c.G, 1)),
+		math.Max(0, math.Min(c.B, 1)),
+	}
+}
+
 func (c Color) MultiplyScalar(s float64) Color {
 	return Color{
 		R: c.R * s,
 		G: c.G * s,
 		B: c.B * s,
 	}
+}
+
+func (c Color) Multiply(c2 Color) Color {
+	return Color{c.R * c2.R, c.G * c2.G, c.B * c2.B}
 }
 
 type Vector struct {
@@ -108,6 +120,11 @@ func (v Vector) Normalize() Vector {
 		Y: v.Y / length,
 		Z: v.Z / length,
 	}
+}
+
+func (v Vector) DirectionTo(w Vector) Vector {
+	displacement := w.Subtract(v)
+	return displacement.Normalize()
 }
 
 func (v Vector) Length() float64 {

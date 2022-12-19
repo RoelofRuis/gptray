@@ -56,3 +56,9 @@ Improving the shade function by trying to incorporate transparency, refraction, 
 Also adding a recursion depth limit to prevent stackoverflow. It currently looks far from perfect, but it is a decent start.
 
 ![Render 08](renders/08.png)
+
+#### 09. Improving the shade functions
+
+After having split up the `Shade` function into separate parts, I could optimize and tweak them individually.
+
+![Render 09](renders/09.png)
