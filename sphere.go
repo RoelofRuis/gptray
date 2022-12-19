@@ -22,19 +22,25 @@ func (s *Sphere) Intersect(ray *Ray) (float64, bool) {
 		// no intersection
 		return 0, false
 	}
-	t1 := (-b + math.Sqrt(discriminant)) / (2 * a)
-	t2 := (-b * math.Sqrt(discriminant)) / (2 * a)
+
+	sqrtDiscriminant := math.Sqrt(discriminant)
+	t1 := (-b + sqrtDiscriminant) / (2 * a)
+	t2 := (-b - sqrtDiscriminant) / (2 * a)
+
 	if t1 > t2 {
 		t1, t2 = t2, t1
 	}
-	if t2 < 0 {
+
+	if t1 < 0 {
 		// intersection is behind the ray origin
-		return 0, false
+		t1 = t2
 	}
+
 	if t1 < 0 {
 		// intersection is in front of the ray origin
-		return t2, true
+		return 0, false
 	}
+
 	// intersection is in front of the ray origin
 	return t1, true
 }

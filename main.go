@@ -24,9 +24,9 @@ func main() {
 		Radius: 1,
 		MaterialProperties: Material{
 			Color:       &Color{1, 0, 0},
-			Specular:    0.5,
-			Shininess:   32,
-			Reflective:  0.1,
+			Specular:    0.1,
+			Shininess:   10,
+			Reflective:  0.01,
 			Transparent: 0,
 			Refraction:  0,
 		},
@@ -58,7 +58,7 @@ func main() {
 	scene.Lights = append(scene.Lights, light)
 
 	// generate the image
-	img := Raytrace(scene, 640, 480, 50)
+	img := Raytrace(scene, 640, 480)
 
 	// save the image to disk
 	f, err := os.Create("image.png")

@@ -42,3 +42,9 @@ Adding multisampling to improve the output quality.
 Fixed a bug with the aspect ratio calculation and lowered the ground plane a bit.
 
 ![Render 06](renders/06.png)
+
+#### 07. Improved multisampling
+
+Improved the multisampling method by asking for a different method.
+
+![Render 07](renders/07.png)

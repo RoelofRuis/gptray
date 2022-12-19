@@ -3,10 +3,9 @@ package main
 import (
 	"image"
 	"math"
-	"math/rand"
 )
 
-func Raytrace(scene *Scene, width, height int, samples int) *image.RGBA {
+func Raytrace(scene *Scene, width, height int) *image.RGBA {
 	// create an image with the given width and height
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 
@@ -23,29 +22,32 @@ func Raytrace(scene *Scene, width, height int, samples int) *image.RGBA {
 			// initialize the pixel color to black
 			color := Color{0, 0, 0}
 
-			// sample multiple rays per pixel
-			for i := 0; i < samples; i++ {
-				//calculate the x and y coordinates of the pixel in screen space
-				screenX := (float64(x) - halfWidth + rand.Float64()) / halfWidth
-				screenY := -(float64(y) - halfHeight + rand.Float64()) / halfHeight
+			// create a grid of samples for the pixel
+			sampleSize := 5 // number of samples per dimension (e.g. 2x2, 3x3, etc.)
+			for sy := 0; sy < sampleSize; sy++ {
+				for sx := 0; sx < sampleSize; sx++ {
+					// calculate the x and y coordinates of the sample in screen sapce
+					screenX := (float64(x) - halfWidth + (float64(sx) + 0.5) / float64(sampleSize)) / halfWidth
+					screenY := -(float64(y) - halfHeight + (float64(sy) + 0.5) / float64(sampleSize)) / halfHeight
 
-				// create a ray that passes through the pixel
-				ray := CreateRay(scene.Camera, screenX, screenY, aspectRatio)
+					// create a ray that passes through the sample
+					ray := CreateRay(scene.Camera, screenX, screenY, aspectRatio)
 
-				intersection, found := FindIntersection(scene, ray)
+					intersection, found := FindIntersection(scene, ray)
 
-				if !found {
-					// if there is no intersection, set the pixel color to the background color
-					color = color.Add(*scene.BackgroundColor)
-					continue
+					if !found {
+						// if there is no intersection, set the pixel color to the background color
+						color = color.Add(*scene.BackgroundColor)
+						continue
+					}
+
+					// calculate the color of the pixel based on the intersection point, surface normal, material properties, and lighting conditions
+					color = color.Add(*Shade(scene, ray, intersection))
 				}
-
-				// calculate the color of the pixel based on the intersection point, surface normal, material properties, and lighting conditions
-				color = color.Add(*Shade(scene, ray, intersection))
 			}
 
 			// average the colors of the samples
-			color = color.MultiplyScalar(1.0 / float64(samples))
+			color = color.MultiplyScalar(1.0 / float64(sampleSize * sampleSize))
 
 			img.Set(x, y, color)
 		}
