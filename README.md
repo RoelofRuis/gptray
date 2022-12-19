@@ -9,5 +9,7 @@ This is the initial render, personally I think this is amazing, although there a
 
 ![Initial render](initial-render.png)
 
-As I am in no position to judge the correctness of the code, I will have to improve iteratively through further chat interaction.
+#### Further work
+
+As I am in no position to judge the correctness of the code (I am, though, but I will pretend not to be, for the sake of the experiment), I will have to improve iteratively through further chat interaction...
 
