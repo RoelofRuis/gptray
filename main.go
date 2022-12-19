@@ -9,36 +9,50 @@ import (
 func main() {
 	// define the scene
 	scene := &Scene{
-		Objects: []Object{
-			&Sphere{
-				Center: Vector{0, 0, 5},
-				Radius: 1,
-				MaterialProperties: Material{
-					Color:       &Color{1, 0, 0},
-					Specular:    0.5,
-					Shininess:   32,
-					Reflective:  0.5,
-					Transparent: 0,
-					Refraction:  0,
-				},
-			},
-		},
-		Lights: []Light{
-			{
-				Position:  Vector{10, 10, 10},
-				Intensity: 1,
-				Color:     &Color{1, 1, 1},
-			},
-		},
+		BackgroundColor: &Color{0, 0, 0},
+		AmbientLight:    0.2,
 		Camera: Camera{
 			Position: Vector{0, 0, 0},
 			LookAt:   Vector{0, 0, 1},
 			Up:       Vector{0, 1, 0},
-			Fov:      60,
+			Fov:      45,
 		},
-		AmbientLight:    0.1,
-		BackgroundColor: &Color{0, 0, 0},
 	}
+
+	sphere := &Sphere{
+		Center: Vector{0, 0, 5},
+		Radius: 1,
+		MaterialProperties: Material{
+			Color:       &Color{1, 0, 0},
+			Specular:    0.5,
+			Shininess:   32,
+			Reflective:  0.5,
+			Transparent: 0,
+			Refraction:  0,
+		},
+	}
+
+	scene.Objects = append(scene.Objects, sphere)
+
+	plane := Plane{
+		Position:     Vector{0, 0, 0},
+		NormalVector: Vector{0, 1, 0},
+		MaterialProperties: Material{
+			Color:     &Color{0.5, 0.5, 0.5},
+			Specular:  0.5,
+			Shininess: 16,
+		},
+	}
+
+	scene.Objects = append(scene.Objects, plane)
+
+	light := Light{
+		Position:  Vector{10, 10, 10},
+		Intensity: 1,
+		Color:     &Color{1, 1, 1},
+	}
+
+	scene.Lights = append(scene.Lights, light)
 
 	// generate the image
 	img := Raytrace(scene, 640, 480)

@@ -18,3 +18,9 @@ This is the initial render, personally I think this is amazing, although there a
 Adding clamping clearly improves the output image.
 
 ![Render 02](renders/02.png)
+
+#### Render 03
+
+Adding a plane to the scene seems to create a proper mess. Time for some chat guided debugging...
+
+![Render 03](renders/03.png)
