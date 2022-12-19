@@ -117,6 +117,9 @@ func Shade(scene *Scene, ray *Ray, intersection *Intersection) *Color {
 	// initialize the pixel color to the ambient color of the material
 	color := intersection.Object.Material().Color.MultiplyScalar(scene.AmbientLight)
 
+	// clamp the shininness value to a reasonable range
+	shininess := math.Min(128.0, math.Max(1.0, intersection.Object.Material().Shininess))
+
 	// iterate over all the lights in the scene
 	for _, light := range scene.Lights {
 		// calculate the direction from the intersection point to the light source
@@ -129,14 +132,14 @@ func Shade(scene *Scene, ray *Ray, intersection *Intersection) *Color {
 			reflectDir := lightDir.Reflect(normal)
 			specular := ray.Direction.Dot(reflectDir)
 			if specular > 0 {
-				specular = math.Pow(specular, intersection.Object.Material().Shininess)
+				specular = math.Pow(specular, shininess)
 			} else {
 				specular = 0
 			}
 
 			// add the diffuse and specular components to the pixel color
 			color = color.Add(intersection.Object.Material().Color.MultiplyScalar(diffuse).MultiplyScalar(light.Intensity))
-			color = color.Add(light.Color.MultiplyScalar(intersection.Object.Material().Specular).MultiplyScalar(specular).MultiplyScalar(light.Intensity))
+			color = color.Add(light.Color.MultiplyScalar(specular / shininess).MultiplyScalar(light.Intensity))
 		}
 	}
 
