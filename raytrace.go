@@ -3,9 +3,10 @@ package main
 import (
 	"image"
 	"math"
+	"math/rand"
 )
 
-func Raytrace(scene *Scene, width, height int) *image.RGBA {
+func Raytrace(scene *Scene, width, height int, samples int) *image.RGBA {
 	// create an image with the given width and height
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 
@@ -19,22 +20,32 @@ func Raytrace(scene *Scene, width, height int) *image.RGBA {
 	// iterate over all the pixels in the image
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
-			//calculate the x and y coordinates of the pixel in screen space
-			screenX := (float64(x) - halfWidth) / halfWidth
-			screenY := -(float64(y) - halfHeight) / halfHeight
+			// initialize the pixel color to black
+			color := Color{0, 0, 0}
 
-			// create a ray that passes through the pixel
-			ray := CreateRay(scene.Camera, screenX, screenY, aspectRatio)
+			// sample multiple rays per pixel
+			for i := 0; i < samples; i++ {
+				//calculate the x and y coordinates of the pixel in screen space
+				screenX := (float64(x) - halfWidth + rand.Float64()) / halfWidth
+				screenY := -(float64(y) - halfHeight + rand.Float64()) / halfHeight
 
-			intersection, found := FindIntersection(scene, ray)
-			if !found {
-				// if there is no intersection, set the pixel color to the background color
-				img.Set(x, y, scene.BackgroundColor)
-				continue
+				// create a ray that passes through the pixel
+				ray := CreateRay(scene.Camera, screenX, screenY, aspectRatio)
+
+				intersection, found := FindIntersection(scene, ray)
+
+				if !found {
+					// if there is no intersection, set the pixel color to the background color
+					color = color.Add(*scene.BackgroundColor)
+					continue
+				}
+
+				// calculate the color of the pixel based on the intersection point, surface normal, material properties, and lighting conditions
+				color = color.Add(*Shade(scene, ray, intersection))
 			}
 
-			// calculate the color of the pixel based on the intersection point, surface normal, material properties, and lighting conditions
-			color := Shade(scene, ray, intersection)
+			// average the colors of the samples
+			color = color.MultiplyScalar(1.0 / float64(samples))
 
 			img.Set(x, y, color)
 		}

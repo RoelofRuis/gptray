@@ -58,7 +58,7 @@ func main() {
 	scene.Lights = append(scene.Lights, light)
 
 	// generate the image
-	img := Raytrace(scene, 640, 480)
+	img := Raytrace(scene, 640, 480, 50)
 
 	// save the image to disk
 	f, err := os.Create("image.png")

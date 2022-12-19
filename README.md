@@ -30,3 +30,9 @@ Adding a plane to the scene seems to create a proper mess. Time for some chat gu
 After correctly positioning the plane and sphere, and adding field of view, the output looks better, but it looks like a new kind of clipping has been introduced.
 
 ![Render 04](renders/04.png)
+
+#### 05. Multisampling
+
+Adding multisampling to improve the output quality.
+
+![Render 05](renders/05.png)
