@@ -15,7 +15,7 @@ func main() {
 			Position: Vector{0, 0, 0},
 			LookAt:   Vector{0, 0, 1},
 			Up:       Vector{0, 1, 0},
-			Fov:      45,
+			Fov:      50,
 		},
 	}
 
@@ -33,18 +33,18 @@ func main() {
 	}
 
 	scene.Objects = append(scene.Objects, sphere)
+	//
+	//plane := Plane{
+	//	Position:     Vector{0, 0, 0},
+	//	NormalVector: Vector{0, 1, 0},
+	//	MaterialProperties: Material{
+	//		Color:     &Color{0.5, 0.5, 0.5},
+	//		Specular:  0.5,
+	//		Shininess: 16,
+	//	},
+	//}
 
-	plane := Plane{
-		Position:     Vector{0, 0, 0},
-		NormalVector: Vector{0, 1, 0},
-		MaterialProperties: Material{
-			Color:     &Color{0.5, 0.5, 0.5},
-			Specular:  0.5,
-			Shininess: 16,
-		},
-	}
-
-	scene.Objects = append(scene.Objects, plane)
+	//scene.Objects = append(scene.Objects, plane)
 
 	light := Light{
 		Position:  Vector{10, 10, 10},

@@ -44,12 +44,21 @@ func Raytrace(scene *Scene, width, height int) *image.RGBA {
 }
 
 func CreateRay(camera Camera, screenX, screenY, aspectRatio float64) *Ray {
-	// calculate the direction of the ray
+	// Calculate the FOV angle in radians
+	fovRadians := camera.Fov * math.Pi / 180.0
+
+	// Calculate hte distance of the near plane from the camera
+	nearPlaneDistance := 1.0 / math.Tan(fovRadians/2.0)
+
+	// Calculate the direction of the ray
 	dir := camera.LookAt.Subtract(camera.Position).Normalize()
 	dir = dir.Add(camera.Up.MultiplyScalar(screenY)).Normalize()
 	dir = dir.Add(camera.Up.Cross(dir).Normalize().MultiplyScalar(screenX / aspectRatio)).Normalize()
 
-	// return the ray with teh given origin and direction
+	// Scale the direction vector by the near plane distance
+	dir = dir.MultiplyScalar(nearPlaneDistance)
+
+	// return the ray with the given origin and direction
 	return &Ray{
 		Origin:    camera.Position,
 		Direction: dir,
@@ -64,19 +73,19 @@ func FindIntersection(scene *Scene, ray *Ray) (*Intersection, bool) {
 	// iterate over all the objects in the scene
 	for _, object := range scene.Objects {
 		// calculate the intersection of the ray with the object
-		t, ok := object.Intersect(ray)
-		if !ok {
+		distance, found := object.Intersect(ray)
+		if !found {
 			continue
 		}
 
 		// check if the intersection is the nearest so far
-		if t < nearest {
+		if distance < nearest {
 			// update the nearest intersection
-			nearest = t
+			nearest = distance
 			nearestIntersection = &Intersection{
-				Object: object,
-				Point:  ray.Origin.Add(ray.Direction.MultiplyScalar(t)),
-				T:      t,
+				Point:    ray.Origin.Add(ray.Direction.MultiplyScalar(distance)),
+				Distance: distance,
+				Object:   object,
 			}
 		}
 	}

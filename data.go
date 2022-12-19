@@ -135,7 +135,7 @@ type Ray struct {
 }
 
 type Intersection struct {
-	Object Object  // the object that was intersected
-	Point  Vector  // the intersection point
-	T      float64 // the distance from the ray origin to the intersection point
+	Object   Object  // the object that was intersected
+	Point    Vector  // the intersection point
+	Distance float64 // the distance from the ray origin to the intersection point
 }
