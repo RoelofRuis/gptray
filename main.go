@@ -9,68 +9,63 @@ import (
 func main() {
 	// define the scene
 	scene := &Scene{
-		BackgroundColor: &Color{0, 0, 0},
-		AmbientLight:    0.2,
+		AmbientColor:     &Color{1, 1, 1},
+		AmbientIntensity: 0.1,
 		Camera: Camera{
 			Position: Vector{0, 0, 0},
 			LookAt:   Vector{0, 0, 1},
 			Up:       Vector{0, 1, 0},
 			Fov:      45,
 		},
-	}
-
-	sphere1 := &Sphere{
-		Center: Vector{0, 0, 5},
-		Radius: 1,
-		MaterialProperties: Material{
-			Color:       &Color{1, 0, 0},
-			Specular:    0,
-			Shininess:   0,
-			Reflective:  1.0,
-			Transparent: 0,
-			Refraction:  0,
+		Lights: []Light{
+			{
+				Position:  Vector{10, 10, 10},
+				Intensity: 1,
+				Color:     &Color{1, 1, 1},
+			},
+		},
+		Objects: []Object{
+			&Sphere{
+				Center: Vector{0, 0, 5},
+				Radius: 1,
+				MaterialProperties: Material{
+					Color:             &Color{1, 0, 0},
+					SpecularIntensity: 1.0,
+					DiffuseIntensity:  1.0,
+					Shininess:         1.0,
+					Reflectivity:      0.0,
+					Transparency:      0.0,
+					RefractionIndex:   1.0,
+				},
+			},
+			&Sphere{
+				Center: Vector{2.5, 0, 3},
+				Radius: 0.8,
+				MaterialProperties: Material{
+					Color:             &Color{0, 1, 0},
+					SpecularIntensity: 1.0,
+					DiffuseIntensity:  1.0,
+					Shininess:         1.0,
+					Reflectivity:      0.0,
+					Transparency:      0.0,
+					RefractionIndex:   1.0,
+				},
+			},
+			Plane{
+				Position:     Vector{0, -10, 0},
+				NormalVector: Vector{0, 1, 0},
+				MaterialProperties: Material{
+					Color:             &Color{0.5, 0.5, 0.5},
+					SpecularIntensity: 1.0,
+					DiffuseIntensity:  1.0,
+					Shininess:         1.0,
+					Reflectivity:      0.0,
+					Transparency:      0.0,
+					RefractionIndex:   1.0,
+				},
+			},
 		},
 	}
-
-	scene.Objects = append(scene.Objects, sphere1)
-
-	sphere2 := &Sphere{
-		Center: Vector{2.5, 0, 3},
-		Radius: 0.8,
-		MaterialProperties: Material{
-			Color:       &Color{0, 1, 0},
-			Specular:    0.2,
-			Shininess:   10,
-			Reflective:  0,
-			Transparent: 0,
-			Refraction:  0,
-		},
-	}
-
-	scene.Objects = append(scene.Objects, sphere2)
-
-	plane := Plane{
-		Position:     Vector{0, -10, 0},
-		NormalVector: Vector{0, 1, 0},
-		MaterialProperties: Material{
-			Color:       &Color{0.5, 0.5, 0.5},
-			Specular:    0.1,
-			Shininess:   3,
-			Reflective:  0,
-			Transparent: 0,
-			Refraction:  0,
-		},
-	}
-
-	scene.Objects = append(scene.Objects, plane)
-
-	light := Light{
-		Position:  Vector{10, 10, 10},
-		Intensity: 1,
-		Color:     &Color{1, 1, 1},
-	}
-
-	scene.Lights = append(scene.Lights, light)
 
 	// generate the image
 	img := Raytrace(scene, 640, 480)

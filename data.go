@@ -3,11 +3,11 @@ package main
 import "math"
 
 type Scene struct {
-	Objects         []Object // slice of objects in the scene
-	Lights          []Light  // slice of light sources in the scene
-	Camera          Camera   // camera position and orientation
-	AmbientLight    float64  // ambient light intensity in the scene
-	BackgroundColor *Color   // background color of the scene
+	Objects          []Object // slice of objects in the scene
+	Lights           []Light  // slice of light sources in the scene
+	Camera           Camera   // camera position and orientation
+	AmbientColor     *Color   // ambient light color of the scene
+	AmbientIntensity float64  // ambient light intensity in the scene
 }
 
 type Object interface {
@@ -33,12 +33,13 @@ type Camera struct {
 }
 
 type Material struct {
-	Color       *Color  //diffuse color of the material
-	Specular    float64 // specular reflection coefficient of the material
-	Shininess   float64 // shininess exponent of the material
-	Reflective  float64 // reflectivity coefficient of the material
-	Transparent float64 // transparent coefficient of the material
-	Refraction  float64 // refraction index of the material
+	Color             *Color  //diffuse color of the material
+	SpecularIntensity float64 // specular reflection coefficient of the material
+	DiffuseIntensity  float64 // diffuse reflection coefficient of the material
+	Shininess         float64 // shininess exponent of the material
+	Reflectivity      float64 // reflectivity coefficient of the material
+	Transparency      float64 // transparency coefficient of the material
+	RefractionIndex   float64 // refraction index of the material
 }
 
 type Color struct {
