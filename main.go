@@ -19,20 +19,35 @@ func main() {
 		},
 	}
 
-	sphere := &Sphere{
+	sphere1 := &Sphere{
 		Center: Vector{0, 0, 5},
 		Radius: 1,
 		MaterialProperties: Material{
 			Color:       &Color{1, 0, 0},
-			Specular:    0.1,
-			Shininess:   10,
-			Reflective:  0.01,
+			Specular:    0,
+			Shininess:   0,
+			Reflective:  1.0,
 			Transparent: 0,
 			Refraction:  0,
 		},
 	}
 
-	scene.Objects = append(scene.Objects, sphere)
+	scene.Objects = append(scene.Objects, sphere1)
+
+	sphere2 := &Sphere{
+		Center: Vector{2.5, 0, 3},
+		Radius: 0.8,
+		MaterialProperties: Material{
+			Color:       &Color{0, 1, 0},
+			Specular:    0.2,
+			Shininess:   10,
+			Reflective:  0,
+			Transparent: 0,
+			Refraction:  0,
+		},
+	}
+
+	scene.Objects = append(scene.Objects, sphere2)
 
 	plane := Plane{
 		Position:     Vector{0, -10, 0},
@@ -41,7 +56,7 @@ func main() {
 			Color:       &Color{0.5, 0.5, 0.5},
 			Specular:    0.1,
 			Shininess:   3,
-			Reflective:  0.5,
+			Reflective:  0,
 			Transparent: 0,
 			Refraction:  0,
 		},

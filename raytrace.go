@@ -27,8 +27,8 @@ func Raytrace(scene *Scene, width, height int) *image.RGBA {
 			for sy := 0; sy < sampleSize; sy++ {
 				for sx := 0; sx < sampleSize; sx++ {
 					// calculate the x and y coordinates of the sample in screen sapce
-					screenX := (float64(x) - halfWidth + (float64(sx) + 0.5) / float64(sampleSize)) / halfWidth
-					screenY := -(float64(y) - halfHeight + (float64(sy) + 0.5) / float64(sampleSize)) / halfHeight
+					screenX := (float64(x) - halfWidth + (float64(sx)+0.5)/float64(sampleSize)) / halfWidth
+					screenY := -(float64(y) - halfHeight + (float64(sy)+0.5)/float64(sampleSize)) / halfHeight
 
 					// create a ray that passes through the sample
 					ray := CreateRay(scene.Camera, screenX, screenY, aspectRatio)
@@ -42,12 +42,12 @@ func Raytrace(scene *Scene, width, height int) *image.RGBA {
 					}
 
 					// calculate the color of the pixel based on the intersection point, surface normal, material properties, and lighting conditions
-					color = color.Add(*Shade(scene, ray, intersection))
+					color = color.Add(*Shade(scene, ray, intersection, 0))
 				}
 			}
 
 			// average the colors of the samples
-			color = color.MultiplyScalar(1.0 / float64(sampleSize * sampleSize))
+			color = color.MultiplyScalar(1.0 / float64(sampleSize*sampleSize))
 
 			img.Set(x, y, color)
 		}
@@ -102,12 +102,21 @@ func FindIntersection(scene *Scene, ray *Ray) (*Intersection, bool) {
 
 		// check if the intersection is the nearest so far
 		if distance < nearest {
+			// calculate the intersection point
+			intersectionPoint := ray.Origin.Add(ray.Direction.MultiplyScalar(distance))
+
+			inside := false
+			if intersectionPoint.Subtract(ray.Origin).Dot(ray.Direction) < 0 {
+				inside = true
+			}
+
 			// update the nearest intersection
 			nearest = distance
 			nearestIntersection = &Intersection{
-				Point:    ray.Origin.Add(ray.Direction.MultiplyScalar(distance)),
+				Point:    intersectionPoint,
 				Distance: distance,
 				Object:   object,
+				Inside:   inside,
 			}
 		}
 	}
@@ -121,42 +130,87 @@ func FindIntersection(scene *Scene, ray *Ray) (*Intersection, bool) {
 	return nearestIntersection, true
 }
 
-func Shade(scene *Scene, ray *Ray, intersection *Intersection) *Color {
-	//calculate the surface normal at the intersection point
-	normal := intersection.Object.Normal(&intersection.Point)
+const MAX_RECURSION_DEPTH = 1
 
-	// initialize the pixel color to the ambient color of the material
-	color := intersection.Object.Material().Color.MultiplyScalar(scene.AmbientLight)
+func Shade(scene *Scene, ray *Ray, intersection *Intersection, depth int) *Color {
+	// Stop recursion when maximum depth is reached
+	if depth > MAX_RECURSION_DEPTH {
+		return &Color{}
+	}
 
-	// clamp the shininness value to a reasonable range
-	shininess := math.Min(128.0, math.Max(1.0, intersection.Object.Material().Shininess))
+	point := intersection.Point
+	normal := intersection.Object.Normal(&point)
+	material := intersection.Object.Material()
 
-	// iterate over all the lights in the scene
+	// Calculate ambient light contribution
+	color := material.Color.MultiplyScalar(scene.AmbientLight)
+
+	// Calculate diffuse and specular light contributions
 	for _, light := range scene.Lights {
-		// calculate the direction from the intersection point to the light source
-		lightDir := light.Position.Subtract(intersection.Point).Normalize()
+		// Calculate direction from point to light source
+		lightDirection := light.Position.Subtract(point).Normalize()
 
-		// calculate the diffuse and specular components of the lighting
-		diffuse := normal.Dot(lightDir)
+		// Calculate diffuse light contribution
+		diffuse := lightDirection.Dot(normal)
 		if diffuse > 0 {
-			// calculate the specular component
-			reflectDir := lightDir.Reflect(normal)
-			specular := ray.Direction.Dot(reflectDir)
-			if specular > 0 {
-				specular = math.Pow(specular, shininess)
-			} else {
-				specular = 0
-			}
+			diffuseColor := material.Color.MultiplyScalar(diffuse)
+			diffuseColor = diffuseColor.MultiplyScalar(light.Intensity)
+			color = color.Add(diffuseColor)
+		}
 
-			// add the diffuse and specular components to the pixel color
-			color = color.Add(intersection.Object.Material().Color.MultiplyScalar(diffuse).MultiplyScalar(light.Intensity))
-			color = color.Add(light.Color.MultiplyScalar(specular / shininess).MultiplyScalar(light.Intensity))
+		// Calculate specular light contribution
+		if material.Specular > 0 {
+			viewDirection := scene.Camera.Position.Subtract(point).Normalize()
+			halfVector := lightDirection.Add(viewDirection).Normalize()
+			specular := math.Pow(halfVector.Dot(normal), material.Shininess)
+			if specular > 0 {
+				specularColor := light.Color.MultiplyScalar(specular)
+				specularColor = specularColor.MultiplyScalar(material.Specular * light.Intensity)
+				color = color.Add(specularColor)
+			}
 		}
 	}
 
-	color.R = Clamp(color.R, 0, 1)
-	color.G = Clamp(color.G, 0, 1)
-	color.B = Clamp(color.B, 0, 1)
+	// Calculate reflective contribution
+	if material.Reflective > 0 {
+		reflectionDirection := ray.Direction.Subtract(normal.MultiplyScalar(2 * ray.Direction.Dot(normal))).Normalize()
+		reflectionRay := &Ray{point, reflectionDirection}
+		reflectionIntersection, found := FindIntersection(scene, reflectionRay)
+		if found {
+			reflectionColor := Shade(scene, reflectionRay, reflectionIntersection, depth+1).MultiplyScalar(material.Reflective)
+			color = color.Add(reflectionColor)
+		}
+	}
+
+	// Calculate transparent and refractive contributions
+	if material.Transparent > 0 {
+		refractionIndex := material.Refraction
+		if intersection.Inside {
+			refractionIndex = 1.0 / refractionIndex
+		}
+		cosI := -normal.Dot(ray.Direction)
+		sinT2 := refractionIndex * refractionIndex * (1.0 - cosI*cosI)
+		if sinT2 > 1.0 {
+			// Total internal reflection
+			reflectionDirection := ray.Direction.Subtract(normal.MultiplyScalar(2 * ray.Direction.Dot(normal))).Normalize()
+			reflectionRay := &Ray{point, reflectionDirection}
+			reflectionIntersection, found := FindIntersection(scene, reflectionRay)
+			if found {
+				reflectionColor := Shade(scene, reflectionRay, reflectionIntersection, depth+1).MultiplyScalar(material.Transparent)
+				color = color.Add(reflectionColor)
+			}
+		} else {
+			// Refraction
+			cosT := math.Sqrt(1.0 - sinT2)
+			refractionDirection := ray.Direction.MultiplyScalar(refractionIndex).Add(normal.MultiplyScalar(refractionIndex*cosI - cosT)).Normalize()
+			refractionRay := &Ray{point, refractionDirection}
+			refractionIntersection, found := FindIntersection(scene, refractionRay)
+			if found {
+				refractionColor := Shade(scene, refractionRay, refractionIntersection, depth+1).MultiplyScalar(material.Transparent)
+				color = color.Add(refractionColor)
+			}
+		}
+	}
 
 	return &color
 }

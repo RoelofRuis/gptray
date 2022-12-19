@@ -48,3 +48,11 @@ Fixed a bug with the aspect ratio calculation and lowered the ground plane a bit
 Improved the multisampling method by asking for a different method.
 
 ![Render 07](renders/07.png)
+
+#### 08. Improving the `Shade` function
+
+Improving the shade function by trying to incorporate transparency, refraction, reflection, diffusion and specular light.
+
+Also adding a recursion depth limit to prevent stackoverflow. It currently looks far from perfect, but it is a decent start.
+
+![Render 08](renders/08.png)

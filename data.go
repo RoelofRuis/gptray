@@ -138,4 +138,5 @@ type Intersection struct {
 	Object   Object  // the object that was intersected
 	Point    Vector  // the intersection point
 	Distance float64 // the distance from the ray origin to the intersection point
+	Inside   bool    // whether the ray is inside the object at the intersection point
 }
