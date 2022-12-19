@@ -9,7 +9,7 @@ As I am in no position to judge the correctness of the code (or at least I will 
 #### Render 01
 
 The basis of the code, up until the point it could output an image for the first time, was generated within one and a half hours!
-This is the initial render, personally I think this is amazing, although there are probably some errors in the code.
+This is the initial render, personally I think this is an amazing result in such a small timeframe, although there are probably errors in the code.
 
 ![Render 01](renders/01.png)
 
