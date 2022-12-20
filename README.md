@@ -81,3 +81,10 @@ But then I could have just written the code myself...
 
 Now that the overall structure of the code is clear to me, I decided that the next best thing to do would be to learn some more about the subject, and then try to work with GPT again to improve certain parts of the code.
 
+So... I threw out all the code and implemented [Ray Tracing in one weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html) in Golang.
+
+This functions in a somewhat similar but also completely different way, and furthermore I get to actually understand the code.
+
+Only dielectric material is not functioning properly.
+
+![Render 11](renders/11.ppm)

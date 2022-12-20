@@ -1,24 +1,38 @@
 package main
 
+import "math"
+
 type Camera struct {
 	Origin          Vector
-	lowerLeftCorner Vector
-	horizontal      Vector
-	vertical        Vector
+	LowerLeftCorner Vector
+	Horizontal      Vector
+	Vertical        Vector
 }
 
-func NewCamera(aspectRatio float64) *Camera {
-	viewportHeight := 2.0
+// NewCamera requires the vertical field-of-view in degrees and the aspect ratio and returns a camera.
+func NewCamera(
+	lookFrom Vector,
+	lookAt Vector,
+	up Vector,
+	vfov, // vertical field-of-view in degrees
+	aspectRatio float64,
+) *Camera {
+	theta := DegreesToRadians(vfov)
+	h := math.Tan(theta / 2)
+	viewportHeight := 2.0 * h
 	viewportWidth := aspectRatio * viewportHeight
-	focalLength := 1.0
 
-	origin := Vector{0, 0, 0}
-	horizontal := Vector{viewportWidth, 0, 0}
-	vertical := Vector{0, viewportHeight, 0}
+	w := lookFrom.Sub(lookAt).Unit()
+	u := up.Cross(w).Unit()
+	v := w.Cross(u)
+
+	origin := lookFrom
+	horizontal := u.MulScalar(viewportWidth)
+	vertical := v.MulScalar(viewportHeight)
 	lowerLeftCorner := origin.
 		Sub(horizontal.MulScalar(0.5)).
 		Sub(vertical.MulScalar(0.5)).
-		Sub(Vector{0, 0, focalLength})
+		Sub(w)
 
 	return &Camera{origin, lowerLeftCorner, horizontal, vertical}
 }
@@ -26,6 +40,6 @@ func NewCamera(aspectRatio float64) *Camera {
 func (c Camera) GetRay(x, y float64) Ray {
 	return Ray{
 		c.Origin,
-		c.lowerLeftCorner.Add(c.horizontal.MulScalar(x)).Add(c.vertical.MulScalar(y)).Sub(c.Origin),
+		c.LowerLeftCorner.Add(c.Horizontal.MulScalar(x)).Add(c.Vertical.MulScalar(y)).Sub(c.Origin),
 	}
 }

@@ -22,10 +22,11 @@ func (w World) Hit(r Ray, tMin, tMax float64) (HitRecord, bool) {
 
 // HitRecord represents the data of a ray-object intersection
 type HitRecord struct {
-	Position  Vector  // position of the intersection point of the ray and the object
-	Normal    Vector  // surface normal at the intersection point
-	T         float64 // the distance along the ray from the origin to the intersection
-	FrontFace bool    // whether the ray hit the front or the back of the object
+	Position  Vector   // position of the intersection point of the ray and the object
+	Normal    Vector   // surface normal at the intersection point
+	T         float64  // the distance along the ray from the origin to the intersection
+	FrontFace bool     // whether the ray hit the front or the back of the object
+	Material  Material // the material that was hit
 }
 
 func (h *HitRecord) SetFaceNormal(r Ray, outwardNormal Vector) {
@@ -45,8 +46,9 @@ type Hittable interface {
 }
 
 type Sphere2 struct {
-	Center Vector
-	Radius float64
+	Center   Vector
+	Radius   float64
+	Material Material
 }
 
 func (s Sphere2) Hit(r Ray, tMin, tMax float64) (HitRecord, bool) {
@@ -73,7 +75,7 @@ func (s Sphere2) Hit(r Ray, tMin, tMax float64) (HitRecord, bool) {
 	p := r.At(t)
 	outwardNormal := p.Sub(s.Center).DivScalar(s.Radius)
 
-	hitRecord := HitRecord{Position: p, T: t}
+	hitRecord := HitRecord{Position: p, T: t, Material: s.Material}
 	hitRecord.SetFaceNormal(r, outwardNormal)
 
 	return hitRecord, true

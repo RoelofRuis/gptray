@@ -17,13 +17,26 @@ func Draw(w io.Writer, width, height int) error {
 	maxDepth := 50
 
 	// World
-	world := World{
-		Sphere2{Vector{0, 0, -1}, 0.5},
-		Sphere2{Vector{0, -100.5, -1}, 100},
-	}
+	world := World{}
+
+	materialGround := Lambertian{Color{0.8, 0.8, 0.0}}
+	materialCenter := Lambertian{Color{0.1, 0.2, 0.5}}
+	materialLeft := Dielectric{1.5} //Metal{Color{0.8, 0.8, 0.8}, 0.3}
+	materialRight := Metal{Color{0.8, 0.6, 0.2}, 0.0}
+
+	world = append(world, Sphere2{Vector{0.0, -100.5, -1.0}, 100.0, materialGround})
+	world = append(world, Sphere2{Vector{0.0, 0.0, -1.0}, 0.5, materialCenter})
+	world = append(world, Sphere2{Vector{-1.0, 0.0, -1.0}, 0.5, materialLeft})
+	world = append(world, Sphere2{Vector{1.0, 0.0, -1.0}, 0.5, materialRight})
 
 	// Camera
-	camera := NewCamera(aspectRatio)
+	camera := NewCamera(
+		Vector{-2, 2, 1},
+		Vector{0, 0, -1},
+		Vector{0, 1, 0},
+		45,
+		aspectRatio,
+	)
 
 	// Render
 	_, err := fmt.Fprintf(w, "P3\n%d %d\n255\n", width, height)
@@ -64,12 +77,14 @@ func RayColor(r Ray, world World, depth int) Color {
 	}
 
 	if rec, hasHit := world.Hit(r, 0.001, math.MaxFloat64); hasHit {
-		target := rec.Position.Add(rec.Normal).Add(RandomUnitVector())
-		return RayColor(
-			Ray{rec.Position, target.Sub(rec.Position)},
-			world,
-			depth-1,
-		).MulScalar(0.5)
+		isScattered, attenuation, scattered := rec.Material.Scatter(r, rec)
+
+		if isScattered {
+			return RayColor(scattered, world, depth-1).Mul(attenuation)
+		}
+
+		return Color{}
+
 	}
 
 	unitDirection := r.Direction.Unit()
