@@ -20,7 +20,7 @@ func (p Plane) Intersect(ray *Ray) (float64, bool) {
 	distance := p.NormalVector.Dot(p.Position.Subtract(ray.Origin)) / dot
 
 	// Check if the distance is positive (i.e. the intersection point is in front of the ray)
-	if distance < 0 {
+	if distance <= 0 {
 		// the intersection point is behind the ray, so it does not intersect
 		return 0, false
 	}

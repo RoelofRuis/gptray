@@ -1,5 +1,9 @@
 # GPT-RAY
 
+An experiment to learn how to best interact with this amazing new tool.
+
+### Introduction
+
 Although I have a solid 10 years programming experience, I have no prior knowledge of light transport and rendering software. 
 
 So I thought why not let ChatGPT help me write a raytracer.
@@ -62,3 +66,13 @@ Also adding a recursion depth limit to prevent stackoverflow. It currently looks
 After having split up the `Shade` function into separate parts, I could optimize and tweak them individually.
 
 ![Render 09](renders/09.png)
+
+#### 10. Further improvements
+
+I have rewritten the shader functions, but this required a lot of debugging. And some aspects still feel incorrect/off.
+
+At this point I'm not sure whether it is any good to continue down this path; I feel like I need to learn more about raytracing myself before I can redirect the AI to find potential bugs.
+
+But then I could have just written the code myself...
+
+![Render 10](renders/10.png)

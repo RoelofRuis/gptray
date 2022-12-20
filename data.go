@@ -147,6 +147,10 @@ func (v Vector) Reflect(n Vector) Vector {
 	return v.Subtract(n.MultiplyScalar(2 * v.Dot(n)))
 }
 
+func (v Vector) Negate() Vector {
+	return Vector{-v.X, -v.Y, -v.Z}
+}
+
 type Ray struct {
 	Origin    Vector // origin of the ray
 	Direction Vector // direction of the ray

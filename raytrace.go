@@ -3,6 +3,7 @@ package main
 import (
 	"image"
 	"math"
+	"math/rand"
 )
 
 func Raytrace(scene *Scene, width, height int) *image.RGBA {
@@ -21,12 +22,12 @@ func Raytrace(scene *Scene, width, height int) *image.RGBA {
 		for x := 0; x < width; x++ {
 			// calculate the x and y coordinates of the center of the pixel in screen space
 			screenX := (float64(x) - halfWidth) / halfWidth
-			screenY := -(float64(y) -halfHeight) / halfHeight
+			screenY := -(float64(y) - halfHeight) / halfHeight
 
 			// create a ray that passes through the center of the pixel
 			ray := CreateRay(scene.Camera, screenX, screenY, aspectRatio)
 
-			color := SampleColor(scene, ray, 5, 0)
+			color := SampleColor(scene, ray, SampleSize, 0)
 
 			img.Set(x, y, color)
 		}
@@ -39,31 +40,32 @@ func SampleColor(scene *Scene, ray *Ray, sampleSize, depth int) Color {
 	// initialize the color to black
 	color := Color{}
 
-	// create a grid of samples
-	for sy := 0; sy < sampleSize; sy++ {
-		for sx := 0; sx < sampleSize; sx++ {
-			//adjust the position of the ray slightly for each sample
-			sampleRay := &Ray{
-				Origin: ray.Origin,
-				Direction: ray.Direction.Add(ray.Direction.MultiplyScalar((float64(sx * 1) - float64(sampleSize - 1)/2) /
-					float64(sampleSize)).Add(ray.Direction.MultiplyScalar((float64(sy * 1) - float64(sampleSize - 1)/2) / float64(sampleSize)))),
-			}
+	offset := 0.01
 
-			intersection, found := FindIntersection(scene, sampleRay)
+	for n := 0; n < sampleSize; n++ {
+		x := (rand.Float64() * 2 * offset) - offset
+		y := (rand.Float64() * 2 * offset) - offset
+		z := (rand.Float64() * 2 * offset) - offset
 
-			if !found {
-				// if there is no intersection, set the color to the background color
-				color = color.Add(*scene.AmbientColor)
-				continue
-			}
-
-			// calculate the color based on the intersection point, surface normal, material properties, and lighting conditions
-			shade := Shade(scene, sampleRay, intersection, depth)
-			color = color.Add(*shade)
+		sampleRay := &Ray{
+			Origin:    ray.Origin,
+			Direction: ray.Direction.Add(Vector{x, y, z}),
 		}
+
+		intersection, found := FindIntersection(scene, sampleRay)
+
+		if !found {
+			// if there is no intersection, set the color to the background color
+			color = color.Add(*scene.AmbientColor)
+			continue
+		}
+
+		// calculate the color based on the intersection point, surface normal, material properties, and lighting conditions
+		shade := Shade(scene, sampleRay, intersection, depth)
+		color = color.Add(shade.Clamp())
 	}
 
-	color = color.MultiplyScalar(1.0 / float64(sampleSize*sampleSize))
+	color = color.MultiplyScalar(1.0 / float64(sampleSize))
 
 	return color
 }
