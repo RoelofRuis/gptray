@@ -7,7 +7,7 @@ import (
 const MaxRecursionDepth = 1
 const SampleSize = 20
 
-func Shade(scene *Scene, ray *Ray, intersection *Intersection, depth int) *Color {
+func Shade(scene *Scene, ray *Ray, intersection *Intersection, depth int) *Color2 {
 	// calculate the color contribution at the intersection point
 	color := CalculateColor(scene, ray, intersection)
 
@@ -29,11 +29,11 @@ func Shade(scene *Scene, ray *Ray, intersection *Intersection, depth int) *Color
 		_, refractionFound := FindIntersection(scene, refractionRay)
 
 		// calculate the reflection and refraction colors
-		reflectionColor := Color{}
+		reflectionColor := Color2{}
 		if reflectionFound {
 			reflectionColor = SampleColor(scene, reflectionRay, SampleSize, depth+1).MultiplyScalar(reflectivity)
 		}
-		refractionColor := Color{}
+		refractionColor := Color2{}
 		if refractionFound {
 			refractionColor = SampleColor(scene, refractionRay, SampleSize, depth+1).MultiplyScalar(transparency)
 		}
@@ -47,7 +47,7 @@ func Shade(scene *Scene, ray *Ray, intersection *Intersection, depth int) *Color
 }
 
 // CalculateColor calculates the color contribution at the intersection point.
-func CalculateColor(scene *Scene, ray *Ray, intersection *Intersection) Color {
+func CalculateColor(scene *Scene, ray *Ray, intersection *Intersection) Color2 {
 	// calculate the ambient, diffuse, and specular lighting contributions
 	ambient := CalculateAmbientLighting(scene, intersection)
 	diffuse := CalculateDiffuseLighting(scene, ray, intersection)
@@ -62,7 +62,7 @@ func CalculateReflectionAndRefractionRays(ray *Ray, intersection *Intersection) 
 	// calculate the normal vector at the intersection point
 	normal := intersection.Object.Normal(&intersection.Point)
 
-	reflectionDirection := ray.Direction.Subtract(normal.MultiplyScalar(2 * ray.Direction.Dot(normal))).Normalize()
+	reflectionDirection := ray.Direction.Sub(normal.MulScalar(2 * ray.Direction.Dot(normal))).Unit()
 	reflectionRay := &Ray{intersection.Point, reflectionDirection}
 
 	refractionRay := &Ray{}
@@ -75,7 +75,7 @@ func CalculateReflectionAndRefractionRays(ray *Ray, intersection *Intersection) 
 		sinT2 := refractionIndex * refractionIndex * (1.0 - cosI*cosI)
 		if sinT2 <= 1.0 {
 			cosT := math.Sqrt(1.0 - sinT2)
-			refractionDirection := ray.Direction.MultiplyScalar(refractionIndex).Add(normal.MultiplyScalar(refractionIndex*cosI - cosT)).Normalize()
+			refractionDirection := ray.Direction.MulScalar(refractionIndex).Add(normal.MulScalar(refractionIndex*cosI - cosT)).Unit()
 			refractionRay = &Ray{intersection.Point, refractionDirection}
 		}
 	}
@@ -84,7 +84,7 @@ func CalculateReflectionAndRefractionRays(ray *Ray, intersection *Intersection) 
 }
 
 // CalculateAmbientLighting calculates the ambient lighting contribution at the intersection point.
-func CalculateAmbientLighting(scene *Scene, intersection *Intersection) Color {
+func CalculateAmbientLighting(scene *Scene, intersection *Intersection) Color2 {
 	// get the ambient color and intensity of the scene
 	ambientColor := scene.AmbientColor
 	ambientIntensity := scene.AmbientIntensity
@@ -96,9 +96,9 @@ func CalculateAmbientLighting(scene *Scene, intersection *Intersection) Color {
 }
 
 // CalculateDiffuseLighting calculates the diffuse lighting contribution at the intersection point.
-func CalculateDiffuseLighting(scene *Scene, ray *Ray, intersection *Intersection) Color {
+func CalculateDiffuseLighting(scene *Scene, ray *Ray, intersection *Intersection) Color2 {
 	// initialize the diffuse lighting contribution to zero
-	diffuse := Color{}
+	diffuse := Color2{}
 
 	for _, light := range scene.Lights {
 		// calculate the direction of the light
@@ -127,9 +127,9 @@ func CalculateDiffuseLighting(scene *Scene, ray *Ray, intersection *Intersection
 }
 
 // CalculateSpecularLighting calculates the specular lighting contribution at the intersection point.
-func CalculateSpecularLighting(scene *Scene, ray *Ray, intersection *Intersection) Color {
+func CalculateSpecularLighting(scene *Scene, ray *Ray, intersection *Intersection) Color2 {
 	//initialize the specular lighting contribution to zero
-	specular := Color{}
+	specular := Color2{}
 
 	// Get the material properties of the intersected object
 	material := intersection.Object.Material()
@@ -141,7 +141,7 @@ func CalculateSpecularLighting(scene *Scene, ray *Ray, intersection *Intersectio
 		reflection := lightDirection.Reflect(intersection.Object.Normal(&intersection.Point))
 
 		// Calculate the intensity of the specular lighting
-		intensity := light.Intensity * math.Pow(reflection.Dot(ray.Direction.Negate()), material.SpecularExponent)
+		intensity := light.Intensity * math.Pow(reflection.Dot(ray.Direction.Neg()), material.SpecularExponent)
 
 		// Calculate the specular lighting color
 		color := light.Color.Multiply(*material.Color)

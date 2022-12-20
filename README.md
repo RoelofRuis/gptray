@@ -76,3 +76,8 @@ At this point I'm not sure whether it is any good to continue down this path; I 
 But then I could have just written the code myself...
 
 ![Render 10](renders/10.png)
+
+### Interlude
+
+Now that the overall structure of the code is clear to me, I decided that the next best thing to do would be to learn some more about the subject, and then try to work with GPT again to improve certain parts of the code.
+

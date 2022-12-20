@@ -13,7 +13,7 @@ type Sphere struct {
 // and a boolean value indicating whether an intersection occurred.
 func (s *Sphere) Intersect(ray *Ray) (float64, bool) {
 	// calculate the intersection using the quadratic formula
-	oc := ray.Origin.Subtract(s.Center)
+	oc := ray.Origin.Sub(s.Center)
 	a := ray.Direction.Dot(ray.Direction)
 	b := 2 * oc.Dot(ray.Direction)
 	c := oc.Dot(oc) - s.Radius*s.Radius
@@ -48,7 +48,7 @@ func (s *Sphere) Intersect(ray *Ray) (float64, bool) {
 // Normal calculates the surface normal at a given point on the sphere.
 func (s *Sphere) Normal(point *Vector) Vector {
 	// the surface normal is simply the normalized vector from the center of the sphere to the point
-	return point.Subtract(s.Center).Normalize()
+	return point.Sub(s.Center).Unit()
 }
 
 // Material returns the material properties of the sphere.

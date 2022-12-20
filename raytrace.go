@@ -36,9 +36,9 @@ func Raytrace(scene *Scene, width, height int) *image.RGBA {
 	return img
 }
 
-func SampleColor(scene *Scene, ray *Ray, sampleSize, depth int) Color {
+func SampleColor(scene *Scene, ray *Ray, sampleSize, depth int) Color2 {
 	// initialize the color to black
-	color := Color{}
+	color := Color2{}
 
 	offset := 0.01
 
@@ -70,7 +70,7 @@ func SampleColor(scene *Scene, ray *Ray, sampleSize, depth int) Color {
 	return color
 }
 
-func CreateRay(camera Camera, screenX, screenY, aspectRatio float64) *Ray {
+func CreateRay(camera Camera2, screenX, screenY, aspectRatio float64) *Ray {
 	// Calculate the FOV angle in radians
 	fovRadians := camera.Fov * math.Pi / 180.0
 
@@ -78,21 +78,21 @@ func CreateRay(camera Camera, screenX, screenY, aspectRatio float64) *Ray {
 	nearPlaneDistance := 1.0 / math.Tan(fovRadians/2.0)
 
 	// Calculate the direction of the ray
-	dir := camera.LookAt.Subtract(camera.Position).Normalize()
+	dir := camera.LookAt.Sub(camera.Position).Unit()
 
 	// Calculate the right and up vectors
-	right := camera.Up.Cross(dir).Normalize()
+	right := camera.Up.Cross(dir).Unit()
 	up := dir.Cross(right)
 
 	// Scale the right and up vectors by the screen coordinates
-	right = right.MultiplyScalar(screenX * aspectRatio)
-	up = up.MultiplyScalar(screenY)
+	right = right.MulScalar(screenX * aspectRatio)
+	up = up.MulScalar(screenY)
 
 	// Add the right and up vectors to the direction vector
-	dir = dir.Add(right).Add(up).Normalize()
+	dir = dir.Add(right).Add(up).Unit()
 
 	// Scale the direction vector by the near plane distance
-	dir = dir.MultiplyScalar(nearPlaneDistance)
+	dir = dir.MulScalar(nearPlaneDistance)
 
 	// return the ray with the given origin and direction
 	return &Ray{
@@ -117,10 +117,10 @@ func FindIntersection(scene *Scene, ray *Ray) (*Intersection, bool) {
 		// check if the intersection is the nearest so far
 		if distance < nearest {
 			// calculate the intersection point
-			intersectionPoint := ray.Origin.Add(ray.Direction.MultiplyScalar(distance))
+			intersectionPoint := ray.Origin.Add(ray.Direction.MulScalar(distance))
 
 			inside := false
-			if intersectionPoint.Subtract(ray.Origin).Dot(ray.Direction) < 0 {
+			if intersectionPoint.Sub(ray.Origin).Dot(ray.Direction) < 0 {
 				inside = true
 			}
 
