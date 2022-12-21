@@ -106,3 +106,13 @@ func RandomInUnitSphere() Vector {
 func RandomUnitVector() Vector {
 	return RandomInUnitSphere().Unit()
 }
+
+func RandomInUnitDisk() Vector {
+	for {
+		p := Vector{RandomFloat64(-1, 1), RandomFloat64(-1, 1), 0}
+		if p.LengthSquared() >= 1 {
+			continue
+		}
+		return p
+	}
+}

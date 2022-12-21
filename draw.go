@@ -30,12 +30,16 @@ func Draw(w io.Writer, width, height int) error {
 	world = append(world, Sphere2{Vector{1.0, 0.0, -1.0}, 0.5, materialRight})
 
 	// Camera
+	lookFrom := Vector{3, 3, 2}
+	lookAt := Vector{0, 0, -1}
 	camera := NewCamera(
-		Vector{0, 1, 1},
-		Vector{0, 0, -1},
+		lookFrom,
+		lookAt,
 		Vector{0, 1, 0},
 		60,
 		aspectRatio,
+		2.0,
+		lookFrom.Sub(lookAt).Length(),
 	)
 
 	// Render
