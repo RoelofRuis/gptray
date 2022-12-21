@@ -57,12 +57,6 @@ func (v Vector) Unit() Vector {
 	return v.DivScalar(length)
 }
 
-// deprecated TODO: refactor
-func (v Vector) DirectionTo(w Vector) Vector {
-	displacement := w.Sub(v)
-	return displacement.Unit()
-}
-
 // Dot returns the dot product of v and w.
 func (v Vector) Dot(w Vector) float64 {
 	return v.X*w.X + v.Y*w.Y + v.Z*w.Z

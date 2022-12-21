@@ -21,7 +21,7 @@ func Draw(w io.Writer, width, height int) error {
 
 	materialGround := Lambertian{Color{0.8, 0.8, 0.0}}
 	materialCenter := Lambertian{Color{0.1, 0.2, 0.5}}
-	materialLeft := Dielectric{1.5} //Metal{Color{0.8, 0.8, 0.8}, 0.3}
+	materialLeft := Dielectric{1.5}
 	materialRight := Metal{Color{0.8, 0.6, 0.2}, 0.0}
 
 	world = append(world, Sphere2{Vector{0.0, -100.5, -1.0}, 100.0, materialGround})
@@ -31,10 +31,10 @@ func Draw(w io.Writer, width, height int) error {
 
 	// Camera
 	camera := NewCamera(
-		Vector{-2, 2, 1},
+		Vector{0, 1, 1},
 		Vector{0, 0, -1},
 		Vector{0, 1, 0},
-		45,
+		60,
 		aspectRatio,
 	)
 
@@ -84,7 +84,6 @@ func RayColor(r Ray, world World, depth int) Color {
 		}
 
 		return Color{}
-
 	}
 
 	unitDirection := r.Direction.Unit()
