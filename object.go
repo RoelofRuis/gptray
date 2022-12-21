@@ -65,7 +65,7 @@ func (s Sphere2) Hit(r Ray, tMin, tMax float64) (HitRecord, bool) {
 	sqrtd := math.Sqrt(discriminant)
 	root := (-halfB - sqrtd) / a
 	if root < tMin || tMax < root {
-		root := (-halfB + sqrtd) / a
+		root = (-halfB + sqrtd) / a
 		if root < tMin || tMax < root {
 			return HitRecord{}, false
 		}
