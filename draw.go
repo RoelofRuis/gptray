@@ -13,7 +13,7 @@ func Draw(w io.Writer, width, height int) error {
 
 	// Image
 	aspectRatio := float64(width) / float64(height)
-	samplesPerPixel := 100
+	samplesPerPixel := 500
 	maxDepth := 50
 
 	// World
@@ -36,9 +36,9 @@ func Draw(w io.Writer, width, height int) error {
 		lookFrom,
 		lookAt,
 		Vector{0, 1, 0},
-		60,
+		20,
 		aspectRatio,
-		2.0,
+		0.1,
 		lookFrom.Sub(lookAt).Length(),
 	)
 
