@@ -20,13 +20,13 @@ type Image struct {
 	image           *image.RGBA
 }
 
-func NewImage(width, height, samplesPerPixel, maxDepth int) *Image {
+func NewImage(width, height, samplesPerPixel, maxDepth int) Image {
 	aspectRatio := float64(width) / float64(height)
 	scale := 1.0 / float64(samplesPerPixel)
 
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 
-	return &Image{
+	return Image{
 		width,
 		height,
 		samplesPerPixel,
@@ -37,7 +37,7 @@ func NewImage(width, height, samplesPerPixel, maxDepth int) *Image {
 	}
 }
 
-func (i *Image) WriteColor(x, y int, c Color) {
+func (i Image) WriteColor(x, y int, c Color) {
 	// Divide the c by the number of samples and gamma-correct for gamma 2.0
 	r := math.Sqrt(c.X * i.Scale)
 	g := math.Sqrt(c.Y * i.Scale)
@@ -54,6 +54,6 @@ func (i *Image) WriteColor(x, y int, c Color) {
 	i.image.Set(x, y, rgba)
 }
 
-func (i *Image) Save(w io.Writer) error {
+func (i Image) Save(w io.Writer) error {
 	return png.Encode(w, i.image)
 }

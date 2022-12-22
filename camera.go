@@ -22,7 +22,7 @@ func NewCamera(
 	aspectRatio float64,
 	aperture float64,
 	focusDisc float64,
-) *Camera {
+) Camera {
 	theta := DegreesToRadians(vfov)
 	h := math.Tan(theta / 2)
 	viewportHeight := 2.0 * h
@@ -42,7 +42,7 @@ func NewCamera(
 
 	lensRadius := aperture / 2
 
-	return &Camera{
+	return Camera{
 		origin,
 		lowerLeftCorner,
 		horizontal,

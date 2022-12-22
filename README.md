@@ -83,8 +83,13 @@ Now that the overall structure of the code is clear to me, I decided that the ne
 
 So... I threw out all the code and implemented [Ray Tracing in one weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html) in Golang.
 
-This functions in a somewhat similar way, but I quickly understood that some parts use completely different paradigms.
+This functions in a somewhat similar way, but I quickly understood that some parts use completely different paradigms and that there is quite a lot to choose from when it comes down to different ways of rendering.
+This was something that was completely unclear from just interacting with GPT, and would have required more understanding on my part to be able to pose correct follow-up questions. 
+
+I seem to get an idea about the type and depth of knowledge currently contained by ChatGPT, and while it is certainly impressive, it requires quite some thinking to write decent prompts and debug the returned code and statements.
 
 ![Render 11](renders/11.png)
 
-I seem to get an idea about the type and depth of knowledge currently contained by ChatGPT, and while it is certainly impressive, it requires quite some thinking to write decent prompts and debug what it returns.
+### Onwards
+
+To be continued...
