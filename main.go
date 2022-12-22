@@ -6,13 +6,13 @@ import (
 
 func main() {
 	// Image
-	image := NewImage(320, 240, 100, 50)
+	image := NewImage(640, 480, 1000, 50)
 
 	// World
 	checkerTexture := CheckerTexture{NewSolidColor(0.2, 0.3, 0.1), NewSolidColor(0.9, 0.9, 0.9)}
 
 	materialGround := Lambertian{checkerTexture}
-	materialCenter := Lambertian{NewSolidColor(0.1, 0.2, 0.5)}
+	materialCenter := DiffuseLight{NewSolidColor(4, 4, 4)}
 	materialLeft := Dielectric{1.5}
 	materialRight := Metal{Color{0.8, 0.6, 0.2}, 0.0}
 
@@ -23,7 +23,7 @@ func main() {
 	hittables = append(hittables, Sphere2{Vector{0.0, 0.0, -5.0}, 0.5, materialRight})
 
 	world := World{
-		Background: Color{0.7, 0.8, 1.0},
+		Background: Color{},
 		Hittables:  hittables,
 	}
 

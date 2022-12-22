@@ -89,6 +89,7 @@ This was something that was completely unclear from just interacting with GPT, a
 I seem to get an idea about the type and depth of knowledge currently contained by ChatGPT, and while it is certainly impressive, it requires quite some thinking to write decent prompts and debug the returned code and statements.
 
 ![Render 11](renders/11.png)
+![Render 12](renders/12.png)
 
 ### Onwards
 
