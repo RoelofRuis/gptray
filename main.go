@@ -5,14 +5,16 @@ import (
 )
 
 func main() {
-	file, err := os.Create("image.ppm")
+	file, err := os.Create("image.png")
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
 
-	err = Draw(file, 320, 240)
-	if err != nil {
+	image := NewImage(320, 240, 100, 50)
+	Draw(image)
+
+	if err := image.Save(file); err != nil {
 		panic(err)
 	}
 }

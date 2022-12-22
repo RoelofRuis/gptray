@@ -83,8 +83,8 @@ Now that the overall structure of the code is clear to me, I decided that the ne
 
 So... I threw out all the code and implemented [Ray Tracing in one weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html) in Golang.
 
-This functions in a somewhat similar but also completely different way, and furthermore I get to actually understand the code.
+This functions in a somewhat similar way, but I quickly understood that some parts use completely different paradigms.
 
-Only dielectric material is not functioning properly.
+![Render 11](renders/11.png)
 
-![Render 11](renders/11.ppm)
+I seem to get an idea about the type and depth of knowledge currently contained by ChatGPT, and while it is certainly impressive, it requires quite some thinking to write decent prompts and debug what it returns.
