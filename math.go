@@ -22,3 +22,7 @@ func RandomFloat64(min, max float64) float64 {
 func DegreesToRadians(degrees float64) float64 {
 	return degrees * math.Pi / 180.0
 }
+
+func SampleNormal(mean, stddev float64) float64 {
+	return rand.NormFloat64()*stddev + mean
+}

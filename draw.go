@@ -30,22 +30,23 @@ func Draw(world World, camera Camera, image Image) {
 
 // RayColor returns the color for the given Ray
 func RayColor(r Ray, world World, depth int) Color {
-	// we've exceeded the ray bounce limit, no more light is gathered.
+	// We've exceeded the ray bounce limit, no more light is gathered.
 	if depth <= 0 {
 		return Color{}
 	}
 
-	if rec, hasHit := world.Hit(r, 0.001, math.MaxFloat64); hasHit {
-		isScattered, attenuation, scattered := rec.Material.Scatter(r, rec)
-
-		if isScattered {
-			return RayColor(scattered, world, depth-1).Mul(attenuation)
-		}
-
-		return Color{}
+	// If the ray hits nothing, return the background color.
+	rec, hasHit := world.Hit(r, 0.001, math.MaxFloat64)
+	if !hasHit {
+		return world.Background
 	}
 
-	unitDirection := r.Direction.Unit()
-	t := 0.5 * (unitDirection.Y + 1.0)
-	return Color{1, 1, 1}.MulScalar(1.0 - t).Add(Color{0.5, 0.7, 1.0}.MulScalar(t))
+	emitted := rec.Material.Emitted(rec.P, rec.U, rec.V)
+
+	isScattered, attenuation, scattered := rec.Material.Scatter(r, rec)
+	if !isScattered {
+		return emitted
+	}
+
+	return RayColor(scattered, world, depth-1).Mul(attenuation).Add(emitted)
 }

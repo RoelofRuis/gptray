@@ -2,14 +2,17 @@ package main
 
 import "math"
 
-type World []Hittable
+type World struct {
+	Hittables  []Hittable
+	Background Color
+}
 
 func (w World) Hit(r Ray, tMin, tMax float64) (HitRecord, bool) {
 	var rec HitRecord
 	hasHit := false
 	closest := tMax
 
-	for _, hittable := range w {
+	for _, hittable := range w.Hittables {
 		if hr, ok := hittable.Hit(r, tMin, closest); ok {
 			hasHit = true
 			closest = hr.T
@@ -22,7 +25,9 @@ func (w World) Hit(r Ray, tMin, tMax float64) (HitRecord, bool) {
 
 // HitRecord represents the data of a ray-object intersection
 type HitRecord struct {
-	Position  Vector   // position of the intersection point of the ray and the object
+	P         Vector   // position of the intersection point of the ray and the object
+	U         float64  // U surface coordinate of the ray-object hitpoint
+	V         float64  // V surface coordinate of the ray-object hitpoint
 	Normal    Vector   // surface normal at the intersection point
 	T         float64  // the distance along the ray from the origin to the intersection
 	FrontFace bool     // whether the ray hit the front or the back of the object
@@ -75,7 +80,13 @@ func (s Sphere2) Hit(r Ray, tMin, tMax float64) (HitRecord, bool) {
 	p := r.At(t)
 	outwardNormal := p.Sub(s.Center).DivScalar(s.Radius)
 
-	hitRecord := HitRecord{Position: p, T: t, Material: s.Material}
+	theta := math.Acos(-p.Y)
+	phi := math.Atan2(-p.Z, p.X) + math.Pi
+
+	u := phi / (2 * math.Pi)
+	v := theta / math.Pi
+
+	hitRecord := HitRecord{P: p, U: u, V: v, T: t, Material: s.Material}
 	hitRecord.SetFaceNormal(r, outwardNormal)
 
 	return hitRecord, true

@@ -9,28 +9,34 @@ func main() {
 	image := NewImage(320, 240, 100, 50)
 
 	// World
-	world := World{}
+	checkerTexture := CheckerTexture{NewSolidColor(0.2, 0.3, 0.1), NewSolidColor(0.9, 0.9, 0.9)}
 
-	materialGround := Lambertian{Color{0.8, 0.8, 0.0}}
-	materialCenter := Lambertian{Color{0.1, 0.2, 0.5}}
+	materialGround := Lambertian{checkerTexture}
+	materialCenter := Lambertian{NewSolidColor(0.1, 0.2, 0.5)}
 	materialLeft := Dielectric{1.5}
 	materialRight := Metal{Color{0.8, 0.6, 0.2}, 0.0}
 
-	world = append(world, Sphere2{Vector{0.0, -100.5, -1.0}, 100.0, materialGround})
-	world = append(world, Sphere2{Vector{0.0, 0.0, -1.0}, 0.5, materialCenter})
-	world = append(world, Sphere2{Vector{-1.0, 0.0, -1.0}, 0.5, materialLeft})
-	world = append(world, Sphere2{Vector{1.0, 0.0, -1.0}, 0.5, materialRight})
+	var hittables []Hittable
+	hittables = append(hittables, Sphere2{Vector{0.0, -100.5, -1.0}, 100.0, materialGround})
+	hittables = append(hittables, Sphere2{Vector{0.0, 0.0, -3.0}, 0.5, materialCenter})
+	hittables = append(hittables, Sphere2{Vector{-1.0, 0.0, -1.0}, 0.5, materialLeft})
+	hittables = append(hittables, Sphere2{Vector{0.0, 0.0, -5.0}, 0.5, materialRight})
+
+	world := World{
+		Background: Color{0.7, 0.8, 1.0},
+		Hittables:  hittables,
+	}
 
 	// Camera
-	lookFrom := Vector{3, 3, 2}
-	lookAt := Vector{0, 0, -1}
+	lookFrom := Vector{-1, 1, 1}
+	lookAt := Vector{-1, 0, -1}
 	camera := NewCamera(
 		lookFrom,
 		lookAt,
 		Vector{0, 1, 0},
-		20,
+		50,
 		image.AspectRatio,
-		0.1,
+		0.01,
 		lookFrom.Sub(lookAt).Length(),
 	)
 

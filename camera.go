@@ -61,5 +61,6 @@ func (c Camera) GetRay(x, y float64) Ray {
 	return Ray{
 		c.Origin.Add(offset),
 		c.LowerLeftCorner.Add(c.Horizontal.MulScalar(x)).Add(c.Vertical.MulScalar(y)).Sub(c.Origin).Sub(offset),
+		1.0, // TODO: sample this!
 	}
 }
